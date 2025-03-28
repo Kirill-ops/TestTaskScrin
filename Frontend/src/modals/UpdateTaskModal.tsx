@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { useOutsideClickHandler } from '../hooks';
 import { ApiError, ApiTasks } from '../api';
@@ -29,10 +29,6 @@ function UpdateTaskModal(props: IProps) {
     stage: 'load',
   });
 
-  useEffect(() => {
-    loadTask();
-  }, []);
-
   const loadTask = async () => {
     updateState((x) => {
       x.stage = 'load';
@@ -55,6 +51,10 @@ function UpdateTaskModal(props: IProps) {
       });
     }
   };
+
+  useEffect(() => {
+    loadTask();
+  }, []);
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Escape') {

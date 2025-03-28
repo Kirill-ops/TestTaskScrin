@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { useOutsideClickHandler } from '../hooks';
 import { ApiError, ApiTasks } from '../api';
@@ -186,51 +186,9 @@ const ButtonsDiv = styled.div`
   gap: 10px;
 `;
 
-const InputTextArea = styled.textarea`
-  min-height: 100px;
-  min-width: 400px;
-  max-width: 400px;
-
-  @media (max-width: 1000px) {
-    min-width: 280px;
-    max-width: 280px;
-  }
-
-  border: none;
-  background-color: rgba(0, 0, 0, 0);
-  font-size: 16px;
-  padding: 10px;
-  box-sizing: border-box;
-  outline: none;
-  height: 19px;
-
-  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2) inset;
-
-  cursor: text;
-
-  &[type='text'] {
-    cursor: text;
-  }
-  &[type='password'] {
-    cursor: text;
-  }
-`;
-
 const LabelDiv = styled.div`
   color: black;
   font-size: 16px;
-`;
-
-const InputDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`;
-
-const InputsDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 `;
 
 const ModalContentDiv = styled.div`
