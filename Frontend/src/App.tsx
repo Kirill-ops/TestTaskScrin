@@ -4,15 +4,17 @@ import { AddTaskModal } from './modals';
 import { IScrinTaskFull } from './models';
 import { useEffect } from 'react';
 import { ApiError, ApiTasks } from './api';
-import { ListTasks, Loader } from './components';
+import { CheckBox, ListTasks, Loader } from './components';
 
 type ModalVariant = 'add';
 type PageVariant = 'tasks' | 'error' | 'load';
 type FilterComplete = 'complete' | 'notСomplete' | 'all';
+type Stage = 'load' | 'tasks';
 
 interface IState {
   modalVariant?: ModalVariant;
   pageVariant: PageVariant;
+  stage: Stage;
   tasks: IScrinTaskFull[];
   errorMessage?: string;
   filterComplete: FilterComplete;
@@ -21,13 +23,14 @@ interface IState {
 function App() {
   const [state, updateState] = useImmer<IState>({
     pageVariant: 'load',
+    stage: 'load',
     tasks: [],
     filterComplete: 'all',
   });
 
   const loadTasks = async () => {
     updateState((x) => {
-      x.pageVariant = 'load';
+      x.stage = 'load';
     });
     try {
       let filter: boolean | undefined = undefined;
@@ -39,6 +42,7 @@ function App() {
       updateState((x) => {
         x.tasks = tasks;
         x.pageVariant = 'tasks';
+        x.stage = 'tasks';
       });
     } catch (e) {
       let errorMessage: string | undefined = undefined;
@@ -115,100 +119,47 @@ function App() {
             </AppButton>
           </HeaderDiv>
           <FilterInputsDiv>
-            <InputCheckBoxDiv>
-              <CheckBoxDiv
-                $color={state.filterComplete === 'all' ? 'green' : 'red'}
-                onClick={() => {
-                  updateState((x) => {
-                    x.filterComplete = 'all';
-                  });
-                }}
-              >
-                <i
-                  className={
-                    state.filterComplete === 'all'
-                      ? 'bi bi-check-square-fill'
-                      : 'bi bi-x-square-fill'
-                  }
-                />
-              </CheckBoxDiv>
-              <LabelDiv>Все</LabelDiv>
-            </InputCheckBoxDiv>
-            <InputCheckBoxDiv>
-              <CheckBoxDiv
-                $color={state.filterComplete === 'complete' ? 'green' : 'red'}
-                onClick={() => {
-                  updateState((x) => {
-                    x.filterComplete = 'complete';
-                  });
-                }}
-              >
-                <i
-                  className={
-                    state.filterComplete === 'complete'
-                      ? 'bi bi-check-square-fill'
-                      : 'bi bi-x-square-fill'
-                  }
-                />
-              </CheckBoxDiv>
-              <LabelDiv>Только выполненные</LabelDiv>
-            </InputCheckBoxDiv>
-            <InputCheckBoxDiv>
-              <CheckBoxDiv
-                $color={
-                  state.filterComplete === 'notСomplete' ? 'green' : 'red'
-                }
-                onClick={() => {
-                  updateState((x) => {
-                    x.filterComplete = 'notСomplete';
-                  });
-                }}
-              >
-                <i
-                  className={
-                    state.filterComplete === 'notСomplete'
-                      ? 'bi bi-check-square-fill'
-                      : 'bi bi-x-square-fill'
-                  }
-                />
-              </CheckBoxDiv>
-              <LabelDiv>Только невыполненные</LabelDiv>
-            </InputCheckBoxDiv>
+            <CheckBox
+              value={state.filterComplete === 'all'}
+              label='Все'
+              onClick={() => {
+                updateState((x) => {
+                  x.filterComplete = 'all';
+                });
+              }}
+            />
+            <CheckBox
+              value={state.filterComplete === 'complete'}
+              label='Только выполненные'
+              onClick={() => {
+                updateState((x) => {
+                  x.filterComplete = 'complete';
+                });
+              }}
+            />
+            <CheckBox
+              value={state.filterComplete === 'notСomplete'}
+              label='Только невыполненные'
+              onClick={() => {
+                updateState((x) => {
+                  x.filterComplete = 'notСomplete';
+                });
+              }}
+            />
           </FilterInputsDiv>
-          <ListTasks tasks={state.tasks} />
+          {state.stage === 'tasks' && <ListTasks tasks={state.tasks} />}
+          {state.stage === 'load' && (
+            <LoadContainerDiv>
+              <HeaderH1>Загрузка задач</HeaderH1>
+              <Loader />
+            </LoadContainerDiv>
+          )}
         </ContentDiv>
       )}
       <FillerDiv />
     </AppDiv>
   );
 }
-
-interface IInputCheckBoxDivProps {
-  $color: 'red' | 'green';
-}
-
-const InputCheckBoxDiv = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-  align-items: center;
-  background-color: aliceblue;
-  padding: 5px;
-  border-radius: 3px;
-`;
-
-const CheckBoxDiv = styled.div<IInputCheckBoxDivProps>`
-  font-size: 16px;
-  > i {
-    font-size: 20px;
-    color: ${(p) => p.$color};
-  }
-`;
-
-const LabelDiv = styled.div`
-  color: black;
-  font-size: 14px;
-`;
 
 const FilterInputsDiv = styled.div`
   display: flex;
@@ -268,7 +219,7 @@ const LoadContainerDiv = styled.div`
   justify-content: center;
   flex-grow: 1;
   gap: 10px;
-
+  width: 100%;
   color: aliceblue;
   font-size: 16px;
 `;

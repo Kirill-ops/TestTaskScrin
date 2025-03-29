@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { useOutsideClickHandler } from '../hooks';
 import { ApiError, ApiTasks } from '../api';
 import { useImmer } from 'use-immer';
-import { Loader } from '../components';
+import { CheckBox, Loader } from '../components';
 
 interface IProps {
   taskId: string;
@@ -152,27 +152,17 @@ function UpdateTaskModal(props: IProps) {
                 }}
               />
             </InputDiv>
-            <InputCheckBoxDiv>
-              <CheckBoxDiv
-                $color={state.isComplete ? 'green' : 'red'}
-                onClick={() => {
-                  updateState((x) => {
-                    x.isComplete = !x.isComplete;
-                  });
-                }}
-              >
-                <i
-                  className={
-                    state.isComplete
-                      ? 'bi bi-check-square-fill'
-                      : 'bi bi-x-square-fill'
-                  }
-                />
-              </CheckBoxDiv>
-              <LabelDiv>
-                {state.isComplete ? 'Задача выполнена' : 'Задача не выполнена'}
-              </LabelDiv>
-            </InputCheckBoxDiv>
+            <CheckBox
+              value={state.isComplete}
+              onClick={() => {
+                updateState((x) => {
+                  x.isComplete = !x.isComplete;
+                });
+              }}
+              label={
+                state.isComplete ? 'Задача выполнена' : 'Задача не выполнена'
+              }
+            />
           </InputsDiv>
           <ButtonsDiv>
             <ModalButton
