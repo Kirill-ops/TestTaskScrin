@@ -17,6 +17,7 @@ public class ContextDatabase : DbContext
     public ContextDatabase(DbContextOptions<ContextDatabase> options)
        : base(options)
     {
+        Database.EnsureDeleted();
         Database.EnsureCreated();   
     }
 }
