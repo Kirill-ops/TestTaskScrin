@@ -22,6 +22,16 @@ public class ScrinTask
     public bool IsComplete { get; init; }
 
     /// <summary>
+    ///  Дата создания задачи
+    /// </summary>
+    public DateTimeOffset CreatedAt { get; }
+
+    /// <summary>
+    /// Дата обновления задачи
+    /// </summary>
+    public DateTimeOffset UpdatedAt { get; }
+
+    /// <summary>
     /// Создание новой задачи с уникальным ID
     /// </summary>
     /// <param name="description">Описание задачи</param>
@@ -32,6 +42,7 @@ public class ScrinTask
         Description = description;
         IsComplete = isComplete; // Можно, конечно, сделать так, что у всех новых задач этот признак будет false,
                                  // но оставим возможность, устанавливать завершенность задачи на этапе создания, более верхним сервисам 
+        CreatedAt = UpdatedAt = DateTimeOffset.Now;
     }
 
     /// <summary>
@@ -40,11 +51,18 @@ public class ScrinTask
     /// <param name="id">ID задачи в системе</param>
     /// <param name="description">Описание задачи</param>
     /// <param name="isComplete">Признак того, что задача выполнена</param>
-    public ScrinTask(Guid id, string description, bool isComplete)
+    public ScrinTask(
+        Guid id, 
+        string description, 
+        bool isComplete, 
+        DateTimeOffset createdAt, 
+        DateTimeOffset updatedAt)
     {
         Id = id; 
         Description = description;
         IsComplete = isComplete;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
     }
 
     /// <summary>
@@ -56,5 +74,7 @@ public class ScrinTask
         Id = task.Id;
         Description = task.Description;
         IsComplete = task.IsComplete;
+        CreatedAt = task.CreatedAt;
+        UpdatedAt = task.UpdatedAt;
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Storage.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,6 @@ public class ContextDatabase : DbContext
     public ContextDatabase(DbContextOptions<ContextDatabase> options)
        : base(options)
     {
-        Database.EnsureCreated();
+        Database.EnsureCreated();   
     }
 }

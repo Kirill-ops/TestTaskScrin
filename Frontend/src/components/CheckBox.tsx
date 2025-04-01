@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface IProps {
-  onClick: () => void;
+  onClick?: () => void;
   label?: string;
   value: boolean;
 }
@@ -33,6 +33,7 @@ const InputCheckBoxDiv = styled.div`
   background-color: #fffef0;
   padding: 5px;
   border-radius: 3px;
+  box-sizing: border-box;
   cursor: pointer;
 `;
 

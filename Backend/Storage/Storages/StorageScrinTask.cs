@@ -54,7 +54,7 @@ public class StorageScrinTask(ContextDatabase context)
     public async Task<IReadOnlyList<ScrinTask>> GetAll(bool? isCompleteFilter = null, CancellationToken cancellationToken = default)
     {
         var tasks = isCompleteFilter is null
-            ? await _context.ScrinTasks.ToListAsync()
+            ? await _context.ScrinTasks.OrderByDescending(x => x.CreatedAt).ToListAsync()
             : await _context.ScrinTasks.Where(x => x.IsComplete == isCompleteFilter).ToListAsync();
 
         return tasks.Select(x => x.GetModel()).ToList();

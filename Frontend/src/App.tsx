@@ -1,18 +1,19 @@
 import styled from 'styled-components';
 import { useImmer } from 'use-immer';
-import { AddTaskModal } from './modals';
+import { AddTaskModal, MessageModal } from './modals';
 import { IScrinTaskFull } from './models';
 import { useEffect } from 'react';
 import { ApiError, ApiTasks } from './api';
-import { CheckBox, ListTasks, Loader } from './components';
+import { CheckBox, ListTasks, Loader, TextArea } from './components';
 
-type ModalVariant = 'add';
+type ModalVariant = 'load' | 'success' | 'error';
 type PageVariant = 'tasks' | 'error' | 'load';
 type FilterComplete = 'complete' | 'notСomplete' | 'all';
 type Stage = 'load' | 'tasks';
 
 interface IState {
   modalVariant?: ModalVariant;
+  description: string;
   pageVariant: PageVariant;
   stage: Stage;
   tasks: IScrinTaskFull[];
@@ -25,6 +26,7 @@ function App() {
     pageVariant: 'load',
     stage: 'load',
     tasks: [],
+    description: '',
     filterComplete: 'all',
   });
 
@@ -56,22 +58,35 @@ function App() {
     }
   };
 
+  const handleAddClick = async () => {
+    updateState((x) => {
+      x.modalVariant = 'load';
+    });
+    try {
+      await ApiTasks.getInstance().create(state.description);
+      updateState((x) => {
+        x.modalVariant = 'success';
+      });
+    } catch (e) {
+      let errorMessage: string | undefined = undefined;
+      if (e instanceof ApiError) {
+        errorMessage = e.message;
+      }
+      updateState((x) => {
+        x.modalVariant = 'error';
+        x.errorMessage = errorMessage;
+      });
+    }
+  };
+
   useEffect(() => {
     loadTasks();
   }, [state.filterComplete]);
 
+  const disableAddButton = state.description === '';
+
   return (
     <AppDiv>
-      {state.modalVariant === 'add' && (
-        <AddTaskModal
-          onClose={() => {
-            updateState((x) => {
-              x.modalVariant = undefined;
-            });
-          }}
-        />
-      )}
-
       <FillerDiv />
 
       {state.pageVariant === 'load' && (
@@ -103,22 +118,61 @@ function App() {
 
       {state.pageVariant === 'tasks' && (
         <ContentDiv>
-          <HeaderDiv>
-            <HeaderH1>Задачи</HeaderH1>
-            <AppButton
-              onClick={() => {
+          {state.modalVariant === 'load' && (
+            <MessageModal
+              type='load'
+              onClose={() => {
                 updateState((x) => {
-                  x.modalVariant = 'add';
+                  x.modalVariant = undefined;
                 });
               }}
+            />
+          )}
+          {state.modalVariant === 'success' && (
+            <MessageModal
+              type='success'
+              message='Операция выполнена успешно!'
+              onClose={() => {
+                window.location.href = '/';
+              }}
+            />
+          )}
+          {state.modalVariant === 'error' && (
+            <MessageModal
+              type='error'
+              message={`Ошибка во время выполнения операции. Сообщение: ${state.errorMessage}`}
+              onClose={() => {
+                updateState((x) => {
+                  x.modalVariant = undefined;
+                });
+              }}
+            />
+          )}
+
+          <HeaderDiv>
+            <HeaderH1>Задачи</HeaderH1>
+          </HeaderDiv>
+          <AddInputContentDiv>
+            <TextArea
+              value={state.description}
+              placeholder='Введите текст задачи'
+              onChange={(e) => {
+                updateState((x) => {
+                  x.description = e.target.value;
+                });
+              }}
+            />
+            <AppButton
+              onClick={handleAddClick}
+              disabled={disableAddButton}
             >
               <div>Добавить</div>
               <div>
                 <i className='bi bi-plus-lg' />
               </div>
             </AppButton>
-          </HeaderDiv>
-          <FilterInputsDiv>
+          </AddInputContentDiv>
+          <FilterTasksDiv>
             <CheckBox
               value={state.filterComplete === 'all'}
               label='Все'
@@ -146,7 +200,7 @@ function App() {
                 });
               }}
             />
-          </FilterInputsDiv>
+          </FilterTasksDiv>
           {state.stage === 'tasks' && <ListTasks tasks={state.tasks} />}
           {state.stage === 'load' && (
             <LoadContainerDiv>
@@ -161,7 +215,14 @@ function App() {
   );
 }
 
-const FilterInputsDiv = styled.div`
+const AddInputContentDiv = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+`;
+
+const FilterTasksDiv = styled.div`
   display: flex;
   flex-flow: row wrap;
   gap: 20px;
@@ -170,6 +231,7 @@ const FilterInputsDiv = styled.div`
 const AppButton = styled.button`
   display: flex;
   flex-direction: row;
+  height: 40px;
   gap: 5px;
   padding: 10px;
   font-size: 14px;

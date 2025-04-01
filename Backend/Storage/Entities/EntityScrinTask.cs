@@ -14,11 +14,22 @@ public class EntityScrinTask : IEntity<ScrinTask>
     
     public bool IsComplete { get; set; }
 
-    public EntityScrinTask(Guid id, string description, bool isComplete)
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public DateTimeOffset UpdatedAt { get; set; }
+
+    public EntityScrinTask(
+        Guid id, 
+        string description, 
+        bool isComplete, 
+        DateTimeOffset createdAt,
+        DateTimeOffset updatedAt)
     {
         Id = id;
         Description = description;
         IsComplete = isComplete;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
     }
 
     public EntityScrinTask(ScrinTask task)
@@ -26,11 +37,15 @@ public class EntityScrinTask : IEntity<ScrinTask>
         Id = task.Id;
         Description = task.Description;
         IsComplete = task.IsComplete;
+        CreatedAt = task.CreatedAt;
+        UpdatedAt = task.UpdatedAt;
     }
 
     public ScrinTask GetModel()
         => new(
             id: Id,
             description: Description,
-            isComplete: IsComplete);
+            isComplete: IsComplete,
+            createdAt: CreatedAt,
+            updatedAt: UpdatedAt);
 }
