@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useImmer } from 'use-immer';
-import { AddTaskModal, MessageModal } from './modals';
+import { MessageModal } from './modals';
 import { IScrinTaskFull } from './models';
 import { useEffect } from 'react';
 import { ApiError, ApiTasks } from './api';
@@ -159,6 +159,11 @@ function App() {
               onChange={(e) => {
                 updateState((x) => {
                   x.description = e.target.value;
+                });
+              }}
+              onBlur={() => {
+                updateState((x) => {
+                  x.description = x.description.trim();
                 });
               }}
             />

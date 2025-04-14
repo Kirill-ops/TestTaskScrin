@@ -4,6 +4,7 @@ interface IProps {
   value?: string;
   placeholder?: string;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBlur?: () => void;
 }
 
 function TextArea(props: IProps) {
@@ -11,6 +12,7 @@ function TextArea(props: IProps) {
     <InputTextArea
       value={props.value}
       onChange={props.onChange}
+      onBlur={props.onBlur}
       placeholder={props.placeholder}
     />
   );
